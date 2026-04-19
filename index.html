@@ -1,1175 +1,161 @@
 <!DOCTYPE html>
-<html lang="gu">
+<html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔥 My Discipline Tracker</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box
-        }
+    <title>🔥 Habit Tracker</title>
+    <link rel="stylesheet" href="CSS/style.css">
+    <link rel="manifest" href="JS/manifest.json">
 
-        :root {
-            --bg: #0f0f0f;
-            --card: #1a1a1a;
-            --card2: #222;
-            --border: #2d2d2d;
-            --orange: #f97316;
-            --orange-d: #ea580c;
-            --orange-l: #fff7ed;
-            --gold: #d97706;
-            --gold-l: #fffbeb;
-            --blue: #0369a1;
-            --blue-l: #e0f2fe;
-            --purple: #7c3aed;
-            --purple-l: #faf5ff;
-            --green: #16a34a;
-            --green-l: #dcfce7;
-            --green-t: #166534;
-            --red: #dc2626;
-            --red-l: #fef2f2;
-            --text: #e5e5e5;
-            --muted: #737373;
-            --muted2: #a8a29e;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh
-        }
-
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #f97316, #ea580c);
-            padding: 0
-        }
-
-        .header-inner {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 18px 20px 0
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px
-        }
-
-        .header-title {
-            font-size: 22px;
-            font-weight: 800;
-            color: #fff
-        }
-
-        .header-sub {
-            font-size: 11px;
-            color: rgba(255, 255, 255, .7);
-            margin-top: 2px
-        }
-
-        .tabs {
-            display: flex;
-            gap: 4px
-        }
-
-        .tab {
-            background: transparent;
-            color: rgba(255, 255, 255, .75);
-            border: none;
-            border-radius: 8px 8px 0 0;
-            padding: 9px 20px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            transition: .2s
-        }
-
-        .tab.active {
-            background: #fff;
-            color: #ea580c
-        }
-
-        /* Main content */
-        .main {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 20px 16px 60px
-        }
-
-        /* Cards */
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 8px;
-            margin-bottom: 14px
-        }
-
-        .stat-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 10px 8px;
-            text-align: center
-        }
-
-        .stat-label {
-            font-size: 9px;
-            color: var(--muted);
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            margin-bottom: 4px
-        }
-
-        .stat-val {
-            font-size: 22px;
-            font-weight: 800
-        }
-
-        .stat-sub {
-            font-size: 11px;
-            color: var(--muted)
-        }
-
-        /* Progress bar */
-        .progress-bar-wrap {
-            background: #292524;
-            border-radius: 99px;
-            height: 8px;
-            margin-bottom: 18px;
-            overflow: hidden
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            border-radius: 99px;
-            background: linear-gradient(90deg, #f97316, #fbbf24);
-            transition: width .4s ease
-        }
-
-        /* Task sections */
-        .section {
-            margin-bottom: 14px
-        }
-
-        .section-header {
-            padding: 9px 14px;
-            border-radius: 10px 10px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center
-        }
-
-        .section-header-label {
-            font-weight: 700;
-            font-size: 13px
-        }
-
-        .section-header-time {
-            font-size: 11px;
-            opacity: .75
-        }
-
-        .section-body {
-            border-radius: 0 0 10px 10px;
-            overflow: hidden
-        }
-
-        .task-row {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 9px 14px;
-            border-top: 1px solid var(--border);
-            transition: background .2s
-        }
-
-        .task-row:first-child {
-            border-top: none
-        }
-
-        .task-row.done-row {
-            background: #16a34a12 !important
-        }
-
-        .task-row.wrong-row {
-            background: #dc262612 !important
-        }
-
-        .task-time {
-            font-size: 10px;
-            color: var(--muted);
-            white-space: nowrap;
-            min-width: 80px
-        }
-
-        .task-name {
-            flex: 1;
-            font-size: 13px;
-            font-weight: 600
-        }
-
-        .task-name.done-text {
-            color: #4ade80;
-            text-decoration: line-through
-        }
-
-        .task-name.wrong-text {
-            color: #f87171;
-            text-decoration: line-through
-        }
-
-        .task-btns {
-            display: flex;
-            gap: 5px
-        }
-
-        .btn-done,
-        .btn-wrong,
-        .btn-clear {
-            border: none;
-            border-radius: 7px;
-            padding: 5px 10px;
-            font-size: 13px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: .2s
-        }
-
-        .btn-done {
-            background: #16a34a22;
-            color: #4ade80;
-            border: 1px solid #16a34a33
-        }
-
-        .btn-done:hover,
-        .btn-done.active {
-            background: #16a34a;
-            color: #fff
-        }
-
-        .btn-wrong {
-            background: #dc262622;
-            color: #f87171;
-            border: 1px solid #dc262633
-        }
-
-        .btn-wrong:hover,
-        .btn-wrong.active {
-            background: #dc2626;
-            color: #fff
-        }
-
-        .btn-clear {
-            background: #2a2a2a;
-            color: var(--muted);
-            border: 1px solid var(--border);
-            font-size: 11px
-        }
-
-        .task-status {
-            font-size: 11px;
-            font-weight: 700;
-            min-width: 30px;
-            text-align: right
-        }
-
-        /* Top bar */
-        .top-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 14px;
-            flex-wrap: wrap
-        }
-
-        .date-card {
-            flex: 1;
-            min-width: 180px;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 16px
-        }
-
-        .date-label {
-            font-size: 10px;
-            color: var(--muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 3px
-        }
-
-        .date-val {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--orange)
-        }
-
-        .screen-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 16px;
-            min-width: 150px
-        }
-
-        .screen-label {
-            font-size: 10px;
-            color: var(--muted);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 6px
-        }
-
-        .screen-input {
-            display: flex;
-            align-items: center;
-            gap: 6px
-        }
-
-        .screen-input input {
-            width: 64px;
-            background: #111;
-            border: 1px solid #3a3a3a;
-            border-radius: 8px;
-            padding: 6px 8px;
-            color: var(--orange);
-            font-size: 18px;
-            font-weight: 700;
-            text-align: center
-        }
-
-        /* Submit button */
-        .submit-area {
-            margin-top: 22px;
-            text-align: center
-        }
-
-        .btn-submit {
-            background: linear-gradient(135deg, #f97316, #ea580c);
-            color: #fff;
-            border: none;
-            border-radius: 14px;
-            padding: 16px 0;
-            font-size: 16px;
-            font-weight: 800;
-            cursor: pointer;
-            width: 100%;
-            box-shadow: 0 4px 24px rgba(249, 115, 22, .35);
-            transition: .2s;
-            letter-spacing: .5px
-        }
-
-        .btn-submit:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 32px rgba(249, 115, 22, .5)
-        }
-
-        .btn-submit:disabled {
-            background: #374151;
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none
-        }
-
-        .submitted-banner {
-            background: #16a34a22;
-            border: 1px solid #16a34a44;
-            border-radius: 14px;
-            padding: 16px 20px;
-            color: #4ade80;
-            font-weight: 700;
-            font-size: 15px;
-            text-align: center
-        }
-
-        .submit-hint {
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 8px
-        }
-
-        /* Toast */
-        #toast {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #16a34a;
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 13px;
-            z-index: 9999;
-            display: none;
-            max-width: 88vw;
-            text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, .5)
-        }
-
-        #toast.error {
-            background: #dc2626
-        }
-
-        /* Monthly */
-        .month-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 14px
-        }
-
-        .month-nav-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: #38bdf8
-        }
-
-        .nav-btn {
-            background: none;
-            border: 1px solid var(--border);
-            color: var(--text);
-            border-radius: 8px;
-            padding: 6px 14px;
-            cursor: pointer;
-            font-size: 16px
-        }
-
-        .month-stats {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-bottom: 14px
-        }
-
-        .cal-grid-header {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            margin-bottom: 6px
-        }
-
-        .cal-dow {
-            text-align: center;
-            font-size: 10px;
-            color: var(--muted);
-            font-weight: 700
-        }
-
-        .cal-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            margin-bottom: 16px
-        }
-
-        .cal-cell {
-            border-radius: 8px;
-            padding: 6px 4px;
-            text-align: center;
-            min-height: 52px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            background: var(--card);
-            border: 1px solid var(--border)
-        }
-
-        .cal-cell.today {
-            border: 2px solid var(--orange)
-        }
-
-        .cal-cell.green {
-            background: #16a34a22;
-            border-color: #16a34a44
-        }
-
-        .cal-cell.yellow {
-            background: #d9770622;
-            border-color: #d9770644
-        }
-
-        .cal-cell.red {
-            background: #dc262622;
-            border-color: #dc262644
-        }
-
-        .cal-day {
-            font-size: 10px;
-            color: var(--muted2)
-        }
-
-        .cal-pct {
-            font-size: 13px;
-            font-weight: 800
-        }
-
-        .cal-st {
-            font-size: 9px;
-            color: #c084fc
-        }
-
-        .chart-card {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 12px;
-            height: 350px;
-
-        }
-
-        .chart-title {
-            font-size: 12px;
-            font-weight: 700;
-            margin-bottom: 12px
-        }
-
-        /* Yearly */
-        .year-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 14px
-        }
-
-        .year-title {
-            font-size: 18px;
-            font-weight: 800;
-            color: #4ade80
-        }
-
-        .month-table {
-            background: var(--card);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            overflow: hidden
-        }
-
-        .month-table-hdr {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr 0.8fr;
-            background: #292524;
-            padding: 9px 14px
-        }
-
-        .month-table-hdr span {
-            font-size: 9px;
-            color: var(--muted2);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            font-weight: 700;
-            text-align: center
-        }
-
-        .month-table-row {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr 1fr 0.8fr;
-            padding: 11px 14px;
-            border-top: 1px solid var(--border);
-            align-items: center
-        }
-
-        .month-table-row:nth-child(even) {
-            background: var(--card2)
-        }
-
-        .month-table-row.cur-month {
-            background: #f9731612
-        }
-
-        /* Legend */
-        .legend {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 14px
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 10px;
-            color: var(--muted2)
-        }
-
-        .legend-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 3px
-        }
-
-        /* Utility */
-        .hidden {
-            display: none !important
-        }
-
-        .flex-center {
-            display: flex;
-            align-items: center;
-            justify-content: center
-        }
-    </style>
 </head>
 
 <body>
 
-    <div id="toast"></div>
+    <div class="al-ov" id="al-ov">
+        <div class="al-box">
+            <div class="al-emoji" id="al-emoji">⏰</div>
+            <div class="al-title" id="al-title">TIME!</div>
+            <div class="al-task" id="al-task"></div>
+            <div class="al-time" id="al-time"></div>
+            <button class="al-dismiss" onclick="dismissAlarm()">✓ Dismiss</button>
+        </div>
+    </div>
 
-    <div class="header">
-        <div class="header-inner">
-            <div class="header-top">
-                <div>
-                    <div class="header-title">🔥 My Discipline Tracker</div>
-                    <div class="header-sub">Ek din — pachi bijo — consistency j real growth chhe</div>
+    <div class="modal-bg" id="modal-bg" onclick="bgClick(event)">
+        <div class="modal">
+            <div class="modal-title">
+                <span id="modal-ttl">➕ Navu Task</span>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Task Name *</label>
+                <input class="form-input" id="f-name" type="text" placeholder="Jema: Morning Walk, Reading...">
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Alarm Time *</label>
+                    <input class="form-input" id="f-time" type="time" value="06:00">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Emoji</label>
+                    <input class="form-input" id="f-emoji" type="text" placeholder="🎯" maxlength="2"
+                        style="font-size:20px;text-align:center">
                 </div>
             </div>
+            <div class="form-group">
+                <label class="form-label">Section (Kyare chhe?)</label>
+                <div class="sec-select">
+                    <div class="sec-opt" id="sec-morning" onclick="selSec('morning')">🌅
+                        Morning<br><small>4AM–7:30AM</small></div>
+                    <div class="sec-opt" id="sec-day" onclick="selSec('day')">☀️ Day<br><small>7:30AM–2PM</small></div>
+                    <div class="sec-opt" id="sec-evening" onclick="selSec('evening')">💼
+                        Evening<br><small>2PM–11PM</small></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Jaldi emoji chuno</label>
+                <div class="emoji-grid" id="emoji-grid"></div>
+            </div>
+            <button class="btn-save" onclick="saveTask()">💾 Save karo</button>
+            <button class="btn-del hidden" id="btn-del" onclick="deleteTask()">🗑️ Delete karo</button>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <div class="hdr">
+        <div class="hdr-inner">
+            <div class="hdr-title">🔥 Habit Tracker</div>
+            <div class="hdr-sub">Ek din — pachi bijo — consistency j real growth</div>
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('daily')">📅 Daily</button>
-                <button class="tab" onclick="switchTab('monthly')">📊 Monthly</button>
-                <button class="tab" onclick="switchTab('yearly')">📈 Yearly</button>
+                <button class="tab active" onclick="switchTab('today')">📅 Today</button>
+                <button class="tab" onclick="switchTab('tasks')">✏️ Tasks</button>
+                <button class="tab" onclick="switchTab('weekly')">📊 Weekly</button>
+                <button class="tab" onclick="switchTab('settings')">⚙️</button>
             </div>
         </div>
     </div>
 
     <div class="main">
-        <!-- DAILY TAB -->
-        <div id="tab-daily">
-            <div class="top-bar">
-                <div class="date-card">
-                    <div class="date-label">Today</div>
-                    <div class="date-val" id="date-display">—</div>
+        <div id="tab-today">
+            <div class="clock-card">
+                <div class="clock-time" id="clock">00:00:00</div>
+                <div class="clock-date" id="clock-date">—</div>
+                <div class="clock-next" id="next-alarm">Loading...</div>
+            </div>
+            <div class="notif-banner" id="notif-banner">
+                <div class="nb-text" id="nb-text">🔔 Alarms mate notification allow karo</div>
+                <button class="nb-btn" id="nb-btn" onclick="requestNotif()">Allow</button>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-l">Done ✓</div>
+                    <div class="stat-v" id="s-done" style="color:#16a34a">0</div>
                 </div>
-                <div class="screen-card">
-                    <div class="screen-label">📱 Screen Time</div>
-                    <div class="screen-input">
-                        <input type="number" id="screen-input" min="0" max="24" step="0.5" placeholder="0.0">
-                        <span style="color:var(--muted);font-size:13px">hrs</span>
-                    </div>
+                <div class="stat">
+                    <div class="stat-l">Skip ✗</div>
+                    <div class="stat-v" id="s-skip" style="color:#dc2626">0</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-l">Progress</div>
+                    <div class="stat-v" id="s-pct" style="color:#0369a1">0%</div>
                 </div>
             </div>
-            <!-- Stats -->
-            <div class="stat-grid">
-                <div class="stat-card">
-                    <div class="stat-label">Done ✓</div>
-                    <div class="stat-val" id="s-done" style="color:#16a34a">0</div>
-                    <div class="stat-sub" id="s-done-sub">/19</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Wrong ✗</div>
-                    <div class="stat-val" id="s-wrong" style="color:#dc2626">0</div>
-                    <div class="stat-sub">&nbsp;</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Progress</div>
-                    <div class="stat-val" id="s-pct" style="color:#0369a1">0%</div>
-                    <div class="stat-sub">&nbsp;</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">⭐ Imp Done</div>
-                    <div class="stat-val" id="s-imp" style="color:#f97316">0</div>
-                    <div class="stat-sub">/4</div>
-                </div>
+            <div class="prog-wrap">
+                <div class="prog-fill" id="prog" style="width:0%"></div>
             </div>
-            <!-- Progress bar -->
-            <div class="progress-bar-wrap">
-                <div class="progress-bar-fill" id="progress-bar" style="width:0%"></div>
-            </div>
-            <!-- Tasks -->
             <div id="tasks-container"></div>
-            <!-- Submit area -->
-            <div class="submit-area" id="submit-area"></div>
         </div>
 
-        <!-- MONTHLY TAB -->
-        <div id="tab-monthly" class="hidden">
-            <div class="month-nav">
-                <button class="nav-btn" onclick="changeMonth(-1)">‹</button>
-                <span class="month-nav-title" id="month-title">—</span>
-                <button class="nav-btn" onclick="changeMonth(1)">›</button>
-            </div>
-            <div class="month-stats">
-                <div class="stat-card">
-                    <div class="stat-label">Avg Completion</div>
-                    <div class="stat-val" id="m-avg" style="color:#0369a1">—</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Avg Screen</div>
-                    <div class="stat-val" id="m-screen" style="color:#7c3aed">—</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Best Day</div>
-                    <div class="stat-val" id="m-best" style="color:#16a34a">—</div>
-                </div>
-            </div>
-            <div class="legend">
-                <div class="legend-item">
-                    <div class="legend-dot" style="background:#4ade80"></div>≥80% 🎉
-                </div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background:#fbbf24"></div>50–79%
-                </div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background:#f87171"></div>&lt;50%
-                </div>
-                <div class="legend-item">
-                    <div class="legend-dot" style="background:#1a1a1a;border:1px solid #3a3a3a"></div>No data
-                </div>
-            </div>
-            <div class="cal-grid-header">
-                <div class="cal-dow">Sun</div>
-                <div class="cal-dow">Mon</div>
-                <div class="cal-dow">Tue</div>
-                <div class="cal-dow">Wed</div>
-                <div class="cal-dow">Thu</div>
-                <div class="cal-dow">Fri</div>
-                <div class="cal-dow">Sat</div>
-            </div>
-            <div class="cal-grid" id="cal-grid"></div>
-            <div class="chart-card">
-                <div class="chart-title" style="color:#38bdf8">📊 Daily Completion %</div>
-                <canvas id="chart-completion" height="140"></canvas>
-            </div>
-            <div class="chart-card">
-                <div class="chart-title" style="color:#c084fc">📱 Screen Time (hrs)</div>
-                <canvas id="chart-screen" height="120"></canvas>
-            </div>
+        <div id="tab-tasks" class="hidden">
+            <button class="add-btn" onclick="openModal()">➕ Navu Task Add karo</button>
+            <div id="manage-list"></div>
         </div>
 
-        <!-- YEARLY TAB -->
-        <div id="tab-yearly" class="hidden">
-            <div class="year-nav">
-                <button class="nav-btn" onclick="changeYear(-1)">‹</button>
-                <span class="year-title" id="year-title">—</span>
-                <button class="nav-btn" onclick="changeYear(1)">›</button>
+        <div id="tab-weekly" class="hidden">
+            <div class="week-grid" id="week-grid"></div>
+            <div id="weekly-detail"></div>
+        </div>
+
+        <div id="tab-settings" class="hidden">
+
+            <div
+                style="background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px;margin-bottom:12px">
+                <div style="font-size:13px;font-weight:700;color:var(--or);margin-bottom:10px">🔔 Alarm Settings</div>
+                <div class="setting-row">
+                    <div>
+                        <div style="font-size:13px">Sound</div>
+                        <div style="font-size:10px;color:var(--mu)">Task time par beep</div>
+                    </div><button class="tog on" id="tog-sound" onclick="toggleSetting('sound')"></button>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div style="font-size:13px">Notification</div>
+                        <div style="font-size:10px;color:var(--mu)">Screen pop-up</div>
+                    </div><button class="tog on" id="tog-notif" onclick="toggleSetting('notif')"></button>
+                </div>
+                <div class="setting-row">
+                    <div>
+                        <div style="font-size:13px">Full Screen Alarm</div>
+                        <div style="font-size:10px;color:var(--mu)">Overlay</div>
+                    </div><button class="tog on" id="tog-overlay" onclick="toggleSetting('overlay')"></button>
+                </div>
             </div>
-            <div class="month-stats" style="margin-bottom:14px">
-                <div class="stat-card">
-                    <div class="stat-label">Total Days</div>
-                    <div class="stat-val" id="y-days" style="color:#4ade80">0</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Overall Avg</div>
-                    <div class="stat-val" id="y-avg" style="color:#38bdf8">—</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-label">Active Months</div>
-                    <div class="stat-val" id="y-months" style="color:#f97316">0</div>
-                </div>
-            </div>
-            <div class="chart-card" style="margin-bottom:14px">
-                <div class="chart-title" style="color:#4ade80">Monthly Avg Completion %</div>
-                <canvas id="chart-yearly" height="160"></canvas>
-            </div>
-            <div class="month-table">
-                <div class="month-table-hdr">
-                    <span>MONTH</span><span>AVG %</span><span>SCREEN</span><span>DAYS</span>
-                </div>
-                <div id="yearly-table-body"></div>
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px">
+                <div style="font-size:13px;font-weight:700;color:var(--or);margin-bottom:10px">🗑️ Data</div>
+                <button onclick="clearToday()"
+                    style="background:#dc262622;color:#f87171;border:1px solid #dc262633;border-radius:9px;padding:11px;font-size:12px;font-weight:700;cursor:pointer;width:100%;margin-bottom:7px">Aaj
+                    no data clear karo</button>
+                <button onclick="clearAll()"
+                    style="background:#dc262633;color:#f87171;border:1px solid #dc262655;border-radius:9px;padding:11px;font-size:12px;font-weight:700;cursor:pointer;width:100%">Badho
+                    data clear karo</button>
             </div>
         </div>
     </div>
 
-    <script>
-        // ─── Data ────────────────────────────────────────────────────────
-        const TASKS_DEF = [
-            { sec: 'important', id: 1, time: '04:00–05:00', name: 'Running & Exercise (Outdoor)' },
-            { sec: 'important', id: 2, time: '05:00–05:30', name: 'ABC Drills & Strength Training' },
-            { sec: 'important', id: 3, time: '05:30–06:00', name: 'Yoga — Full Body Stretch' },
-            { sec: 'important', id: 4, time: '06:00–06:30', name: 'Meditation & Bath' },
-            { sec: 'normal', id: 5, time: '06:30–07:30', name: 'Web Development Learning' },
-            { sec: 'normal', id: 6, time: '07:30–09:00', name: 'Family Time & Breakfast' },
-            { sec: 'normal', id: 7, time: '09:00–10:30', name: 'Work Mode / Support Pappa' },
-            { sec: 'normal', id: 8, time: '10:30–11:30', name: 'English Speaking Practice (Mirror)' },
-            { sec: 'normal', id: 9, time: '11:30–12:00', name: 'Lunch' },
-            { sec: 'job', id: 10, time: '12:00–02:00', name: 'Rest / Nap (Recovery Time)' },
-            { sec: 'job', id: 11, time: '02:00–04:00', name: 'Job + Tuition — Full Focus' },
-            { sec: 'job', id: 12, time: '04:00–06:00', name: 'Job Work Continue' },
-            { sec: 'job', id: 13, time: '06:00–06:30', name: 'Free Time / Commute' },
-            { sec: 'job', id: 14, time: '06:30–07:00', name: 'Bath & Puja / Aarti' },
-            { sec: 'dream', id: 15, time: '07:15–08:00', name: 'Dinner & Family Time' },
-            { sec: 'dream', id: 16, time: '08:30–09:30', name: 'Web Dev Learning — Theory & Notes' },
-            { sec: 'dream', id: 17, time: '09:30–10:30', name: 'Coding Practice — Project Work' },
-            { sec: 'dream', id: 18, time: '10:00–10:20', name: 'Review Day & Plan Tomorrow' },
-            { sec: 'dream', id: 19, time: '10:30 PM', name: 'Deep Sleep — Phone Away 📵' },
-        ];
-        const SECTIONS_META = {
-            important: { label: '⭐ IMPORTANT · Physical & Workout', time: '04:00–07:00 AM', color: '#f97316', bg: '#f9731614', border: '#f9731633', textClr: '#c2410c' },
-            normal: { label: '☀️ NORMAL · Morning Learning', time: '06:30 AM–12:00 PM', color: '#d97706', bg: '#d9770614', border: '#d9770633', textClr: '#92400e' },
-            job: { label: '💼 JOB · Work & Responsibilities', time: '12:00 PM–07:00 PM', color: '#0369a1', bg: '#0369a114', border: '#0369a133', textClr: '#075985' },
-            dream: { label: '🌙 DREAM · Evening Career Focus', time: '07:00–10:30 PM', color: '#7c3aed', bg: '#7c3aed14', border: '#7c3aed33', textClr: '#5b21b6' },
-        };
-        const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-        const TOTAL = TASKS_DEF.length;
-        const IMP_IDS = [1, 2, 3, 4];
+    <script src="JS/script.js"></script>
 
-        // ─── State ──────────────────────────────────────────────────────
-        function loadData() { try { return JSON.parse(localStorage.getItem('discipline_data') || '{}') } catch { return {} } }
-        function saveData(d) { localStorage.setItem('discipline_data', JSON.stringify(d)) }
-
-        let data = loadData();
-        let currentDateObj = new Date(); currentDateObj.setHours(0, 0, 0, 0);
-        let viewMonth = currentDateObj.getMonth();
-        let viewYear = currentDateObj.getFullYear();
-        let viewYearY = currentDateObj.getFullYear();
-        let charts = {};
-
-        function dateKey(d) { return d.toISOString().split('T')[0]; }
-        function todayKey() { return dateKey(new Date()); }
-        function formatDate(d) {
-            return d.toLocaleDateString('en-IN', { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' });
-        }
-
-        // ─── Daily Logic ─────────────────────────────────────────────────
-        function getDayData(key) {
-            if (!data[key]) data[key] = { tasks: {}, screenTime: 0, submitted: false };
-            return data[key];
-        }
-
-        function buildTasks() {
-            const container = document.getElementById('tasks-container');
-            container.innerHTML = '';
-            const sections = ['important', 'normal', 'job', 'dream'];
-            sections.forEach(sec => {
-                const meta = SECTIONS_META[sec];
-                const tasks = TASKS_DEF.filter(t => t.sec === sec);
-                const div = document.createElement('div');
-                div.className = 'section';
-                div.innerHTML = `
-      <div class="section-header" style="background:${meta.bg};border:1px solid ${meta.border};border-bottom:none">
-        <span class="section-header-label" style="color:${meta.color}">${meta.label}</span>
-        <span class="section-header-time" style="color:${meta.textClr}">${meta.time}</span>
-      </div>
-      <div class="section-body" style="border:1px solid ${meta.border}">
-        ${tasks.map(t => `
-          <div class="task-row" id="row-${t.id}" style="background:${meta.bg.replace('14', '08')}">
-            <span class="task-time">${t.time}</span>
-            <span class="task-name" id="name-${t.id}">${t.name}</span>
-            <div class="task-btns">
-              <button class="btn-done" id="btn-done-${t.id}" onclick="markTask(${t.id},'done')">✓</button>
-              <button class="btn-wrong" id="btn-wrong-${t.id}" onclick="markTask(${t.id},'wrong')">✗</button>
-            </div>
-            <span class="task-status" id="status-${t.id}"></span>
-          </div>
-        `).join('')}
-      </div>`;
-                container.appendChild(div);
-            });
-        }
-
-        function markTask(id, val) {
-            const key = dateKey(currentDateObj);
-            const dd = getDayData(key);
-            if (dd.submitted) return;
-            dd.tasks[id] = dd.tasks[id] === val ? null : val;
-            data[key] = dd;
-            saveData(data);
-            refreshDailyUI();
-        }
-
-        function refreshDailyUI() {
-            const key = dateKey(currentDateObj);
-            const dd = getDayData(key);
-            document.getElementById('date-display').textContent = formatDate(currentDateObj);
-            const st = document.getElementById('screen-input');
-            if (st && !st.dataset.bound) {
-                st.value = dd.screenTime || '';
-                st.addEventListener('input', () => {
-                    dd.screenTime = parseFloat(st.value) || 0;
-                    data[key] = dd;
-                    saveData(data);
-                });
-                st.dataset.bound = '1';
-            } else if (st) {
-                st.value = dd.screenTime || '';
-            }
-
-            let done = 0, wrong = 0, imp = 0;
-            TASKS_DEF.forEach(t => {
-                const v = dd.tasks[t.id];
-                const row = document.getElementById('row-' + t.id);
-                const name = document.getElementById('name-' + t.id);
-                const btnD = document.getElementById('btn-done-' + t.id);
-                const btnW = document.getElementById('btn-wrong-' + t.id);
-                const sta = document.getElementById('status-' + t.id);
-                if (!row) return;
-                row.className = 'task-row' + (v === 'done' ? ' done-row' : v === 'wrong' ? ' wrong-row' : '');
-                name.className = 'task-name' + (v === 'done' ? ' done-text' : v === 'wrong' ? ' wrong-text' : '');
-                btnD.className = 'btn-done' + (v === 'done' ? ' active' : '');
-                btnW.className = 'btn-wrong' + (v === 'wrong' ? ' active' : '');
-                if (v === 'done') { sta.textContent = '✓'; sta.style.color = '#4ade80' }
-                else if (v === 'wrong') { sta.textContent = '✗'; sta.style.color = '#f87171' }
-                else { sta.textContent = '' }
-                if (v === 'done') { done++; if (IMP_IDS.includes(t.id)) imp++ }
-                if (v === 'wrong') wrong++;
-            });
-
-            const pct = Math.round((done / TOTAL) * 100);
-            document.getElementById('s-done').textContent = done;
-            document.getElementById('s-wrong').textContent = wrong;
-            document.getElementById('s-pct').textContent = pct + '%';
-            document.getElementById('s-imp').textContent = imp;
-            document.getElementById('progress-bar').style.width = pct + '%';
-
-            // Submit area
-            const area = document.getElementById('submit-area');
-            if (dd.submitted) {
-                area.innerHTML = `<div class="submitted-banner">✅ Aaj no din submit thai chhe! Kal mate ready chhe. 🎉</div>`;
-            } else {
-                area.innerHTML = `
-      <button class="btn-submit" onclick="submitDay()">🚀  Submit Day &amp; Start Tomorrow  →</button>
-      <div class="submit-hint">Submit karo etle aaj no data save thay ane kal nu din ready thay</div>`;
-            }
-        }
-
-        function submitDay() {
-            const key = dateKey(currentDateObj);
-            const dd = getDayData(key);
-            const st = parseFloat(document.getElementById('screen-input').value) || 0;
-            dd.screenTime = st;
-            let done = 0, wrong = 0, imp = 0;
-            TASKS_DEF.forEach(t => {
-                const v = dd.tasks[t.id];
-                if (v === 'done') { done++; if (IMP_IDS.includes(t.id)) imp++ }
-                if (v === 'wrong') wrong++;
-            });
-            dd.doneTasks = done;
-            dd.wrongTasks = wrong;
-            dd.totalTasks = TOTAL;
-            dd.completion = done / TOTAL;
-            dd.impDone = imp;
-            dd.submitted = true;
-            dd.submittedAt = new Date().toISOString();
-            data[key] = dd;
-            saveData(data);
-
-            // Advance to next day
-            const nextDay = new Date(currentDateObj);
-            nextDay.setDate(nextDay.getDate() + 1);
-            currentDateObj = nextDay;
-
-            // Reset screen input binding
-            const si = document.getElementById('screen-input');
-            if (si) { si.value = ''; delete si.dataset.bound; }
-
-            showToast(`✅ ${key} submit thayo! ${Math.round(done / TOTAL * 100)}% completion. Kal mate ready! 🔥`);
-            refreshDailyUI();
-        }
-
-        // ─── Monthly ─────────────────────────────────────────────────────
-        function renderMonthly() {
-            const monthTitle = document.getElementById('month-title');
-            monthTitle.textContent = `${MONTHS[viewMonth]} ${viewYear}`;
-            const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
-            const firstDow = new Date(viewYear, viewMonth, 1).getDay();
-            const todKey = todayKey();
-            const monthData = [];
-            let submitted = [], avgC = 0, avgS = 0, best = 0;
-
-            for (let d = 1; d <= daysInMonth; d++) {
-                const k = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-                const entry = data[k];
-                monthData.push({ d, k, entry });
-                if (entry && entry.submitted) {
-                    submitted.push(entry);
-                    const pct = Math.round(entry.completion * 100);
-                    avgC += pct; avgS += entry.screenTime || 0;
-                    if (pct > best) best = pct;
-                }
-            }
-            if (submitted.length) {
-                document.getElementById('m-avg').textContent = Math.round(avgC / submitted.length) + '%';
-                document.getElementById('m-screen').textContent = (avgS / submitted.length).toFixed(1) + ' hrs';
-                document.getElementById('m-best').textContent = best + '%';
-            } else {
-                document.getElementById('m-avg').textContent = '—';
-                document.getElementById('m-screen').textContent = '—';
-                document.getElementById('m-best').textContent = '—';
-            }
-
-            // Calendar
-            const grid = document.getElementById('cal-grid');
-            grid.innerHTML = '';
-            for (let i = 0; i < firstDow; i++) {
-                const blank = document.createElement('div'); blank.style.minHeight = '52px'; grid.appendChild(blank);
-            }
-            monthData.forEach(({ d, k, entry }) => {
-                const cell = document.createElement('div');
-                const isToday = k === todKey;
-                let cls = 'cal-cell';
-                let pctTxt = '', stTxt = '', pctColor = getComputedStyle(document.documentElement).getPropertyValue('--muted');
-                if (entry && entry.submitted) {
-                    const p = Math.round(entry.completion * 100);
-                    pctTxt = p + '%';
-                    if (p >= 80) { cls += ' green'; pctColor = '#4ade80' }
-                    else if (p >= 50) { cls += ' yellow'; pctColor = '#fbbf24' }
-                    else { cls += ' red'; pctColor = '#f87171' }
-                    if (entry.screenTime) stTxt = entry.screenTime + 'h📱';
-                }
-                if (isToday) cls += ' today';
-                cell.className = cls;
-                const dayClr = isToday ? '#f97316' : 'var(--muted2)';
-                cell.innerHTML = `
-      <div class="cal-day" style="color:${dayClr};font-weight:${isToday ? '700' : 'normal'}">${d}</div>
-      ${pctTxt ? `<div class="cal-pct" style="color:${pctColor}">${pctTxt}</div>` : ''}
-      ${stTxt ? `<div class="cal-st">${stTxt}</div>` : ''}`;
-                grid.appendChild(cell);
-            });
-
-            // Charts
-            const labels = monthData.map(x => x.d + '');
-            const compVals = monthData.map(x => x.entry && x.entry.submitted ? Math.round(x.entry.completion * 100) : 0);
-            const screenVals = monthData.map(x => x.entry && x.entry.submitted ? (x.entry.screenTime || 0) : null);
-            const bgColors = compVals.map(v => v >= 80 ? '#16a34a' : v >= 50 ? '#d97706' : v > 0 ? '#dc2626' : '#2a2a2a');
-
-            if (charts.completion) charts.completion.destroy();
-            charts.completion = new Chart(document.getElementById('chart-completion'), {
-                type: 'bar', data: { labels, datasets: [{ data: compVals, backgroundColor: bgColors, borderRadius: 4, borderSkipped: false }] },
-                options: {
-                    plugins: { legend: { display: false } }, scales: {
-                        x: { ticks: { color: '#737373', font: { size: 9 } }, grid: { color: '#2a2a2a' } },
-                        y: { min: 0, max: 100, ticks: { color: '#737373', font: { size: 9 } }, grid: { color: '#2a2a2a' } }
-                    }, responsive: true, maintainAspectRatio: false
-                }
-            });
-
-            if (charts.screen) charts.screen.destroy();
-            charts.screen = new Chart(document.getElementById('chart-screen'), {
-                type: 'line', data: { labels, datasets: [{ data: screenVals, borderColor: '#c084fc', backgroundColor: '#c084fc22', borderWidth: 2, pointRadius: 2, tension: .3, spanGaps: true }] },
-                options: {
-                    plugins: { legend: { display: false } }, scales: {
-                        x: { ticks: { color: '#737373', font: { size: 9 } }, grid: { color: '#2a2a2a' } },
-                        y: { ticks: { color: '#737373', font: { size: 9 } }, grid: { color: '#2a2a2a' } }
-                    }, responsive: true, maintainAspectRatio: false
-                }
-            });
-        }
-
-        function changeMonth(d) {
-            viewMonth += d;
-            if (viewMonth > 11) { viewMonth = 0; viewYear++ }
-            if (viewMonth < 0) { viewMonth = 11; viewYear-- }
-            renderMonthly();
-        }
-
-        // ─── Yearly ──────────────────────────────────────────────────────
-        function renderYearly() {
-            document.getElementById('year-title').textContent = '📈 ' + viewYearY;
-            const nowM = new Date().getMonth(), nowY = new Date().getFullYear();
-            let totalDays = 0, activeMonths = 0, sumAvg = 0;
-            const monthStats = MONTHS.map((mname, mi) => {
-                const keys = Object.keys(data).filter(k => {
-                    const d = new Date(k); return d.getFullYear() === viewYearY && d.getMonth() === mi && data[k] && data[k].submitted;
-                });
-                if (!keys.length) return { name: mname.slice(0, 3), avg: 0, screen: 0, days: 0 };
-                const entries = keys.map(k => data[k]);
-                const avg = Math.round(entries.reduce((a, e) => a + e.completion * 100, 0) / entries.length);
-                const screen = (entries.reduce((a, e) => a + (e.screenTime || 0), 0) / entries.length).toFixed(1);
-                totalDays += entries.length; activeMonths++; sumAvg += avg;
-                return { name: mname.slice(0, 3), avg, screen: parseFloat(screen), days: entries.length };
-            });
-
-            document.getElementById('y-days').textContent = totalDays;
-            document.getElementById('y-avg').textContent = activeMonths ? Math.round(sumAvg / activeMonths) + '%' : '—';
-            document.getElementById('y-months').textContent = activeMonths;
-
-            if (charts.yearly) charts.yearly.destroy();
-            charts.yearly = new Chart(document.getElementById('chart-yearly'), {
-                type: 'bar',
-                data: {
-                    labels: monthStats.map(m => m.name),
-                    datasets: [{
-                        data: monthStats.map(m => m.avg),
-                        backgroundColor: monthStats.map(m => m.avg >= 80 ? '#16a34a' : m.avg >= 50 ? '#d97706' : m.avg > 0 ? '#dc2626' : '#2a2a2a'),
-                        borderRadius: 5, borderSkipped: false
-                    }]
-                },
-                options: {
-                    plugins: { legend: { display: false } }, scales: {
-                        x: { ticks: { color: '#737373', font: { size: 10 } }, grid: { color: '#2a2a2a' } },
-                        y: { min: 0, max: 100, ticks: { color: '#737373', font: { size: 10 } }, grid: { color: '#2a2a2a' } }
-                    }, responsive: true, maintainAspectRatio: false
-                }
-            });
-
-            const tbody = document.getElementById('yearly-table-body');
-            tbody.innerHTML = '';
-            monthStats.forEach((m, i) => {
-                const isCur = i === nowM && viewYearY === nowY;
-                const pctClr = m.avg >= 80 ? '#4ade80' : m.avg >= 50 ? '#fbbf24' : m.avg > 0 ? '#f87171' : 'var(--muted)';
-                const row = document.createElement('div');
-                row.className = 'month-table-row' + (isCur ? ' cur-month' : '');
-                row.innerHTML = `
-      <span style="font-weight:700;font-size:13px;color:${isCur ? '#f97316' : 'var(--text)'}">${MONTHS[i]}</span>
-      <span style="text-align:center;font-size:15px;font-weight:800;color:${pctClr}">${m.avg ? m.avg + '%' : '—'}</span>
-      <span style="text-align:center;font-size:13px;color:#c084fc">${m.days ? m.screen + 'h' : '—'}</span>
-      <span style="text-align:center;font-size:13px;color:var(--muted)">${m.days || '—'}</span>`;
-                tbody.appendChild(row);
-            });
-        }
-
-        function changeYear(d) { viewYearY += d; renderYearly(); }
-
-        // ─── Tab switching ────────────────────────────────────────────────
-        function switchTab(name) {
-            ['daily', 'monthly', 'yearly'].forEach(t => {
-                document.getElementById('tab-' + t).classList.toggle('hidden', t !== name);
-                document.querySelectorAll('.tab').forEach((el, i) => {
-                    const tabs = ['daily', 'monthly', 'yearly'];
-                    el.classList.toggle('active', tabs[i] === name);
-                });
-            });
-            if (name === 'monthly') renderMonthly();
-            if (name === 'yearly') renderYearly();
-        }
-
-        // ─── Toast ───────────────────────────────────────────────────────
-        function showToast(msg, type = 'success') {
-            const t = document.getElementById('toast');
-            t.textContent = msg; t.className = type === 'error' ? 'error' : '';
-            t.style.display = 'block';
-            setTimeout(() => t.style.display = 'none', 4000);
-        }
-
-        // ─── Init ─────────────────────────────────────────────────────────
-        buildTasks();
-        // If today is already submitted, find next unsubmitted day from today
-        (function () {
-            let d = new Date(); d.setHours(0, 0, 0, 0);
-            // Just use today as current date (don't auto-advance on load)
-            currentDateObj = d;
-        })();
-        refreshDailyUI();
-        // ઉદાહરણ તરીકે chart-completion માટે:
-        charts.completion = new Chart(document.getElementById('chart-completion'), {
-            type: 'bar',
-            data: { /* તમારો ડેટા */ },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false, // આ સાચું છે
-                // ... બાકીનો કોડ
-            }
-        });
-    </script>
 </body>
 
 </html>

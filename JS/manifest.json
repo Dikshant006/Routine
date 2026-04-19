@@ -1,0 +1,15 @@
+{
+    "name": "Habit Tracker",
+    "short_name": "HabitApp",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#0a0a0a",
+    "theme_color": "#f97316",
+    "icons": [
+        {
+            "src": "https://cdn-icons-png.flaticon.com/512/3069/3069153.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ]
+}
